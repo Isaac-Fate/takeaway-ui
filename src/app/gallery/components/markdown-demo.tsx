@@ -29,6 +29,7 @@ console.log("Hello, World!");
 
 
 \`\`\`go
+// main.go
 package main
 
 import "fmt"

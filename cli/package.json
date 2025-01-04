@@ -1,0 +1,15 @@
+{
+  "name": "takeaway-ui",
+  "module": "src/index.ts",
+  "type": "module",
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "commander": "^13.0.0",
+    "inquirer": "^12.3.0"
+  }
+}
