@@ -7,6 +7,10 @@ const components = [
     name: "Camera",
     href: "#camera",
   },
+  {
+    name: "Markdown",
+    href: "#markdown",
+  },
 ] as const;
 
 export default function GalleryLayout({

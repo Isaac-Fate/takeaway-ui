@@ -8,6 +8,8 @@ export interface UseCameraOptions {
   onCapture?: (image: string) => void;
   /** Whether to start in selfie mode (front camera) */
   selfie?: boolean;
+  /** Whether to start the camera automatically */
+  autoStart?: boolean;
 }
 
 /**
@@ -40,6 +42,7 @@ export interface UseCameraOptions {
 export function useCamera({
   onCapture,
   selfie = false,
+  autoStart = false,
 }: UseCameraOptions = {}) {
   // Refs for accessing the video element
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -143,12 +146,12 @@ export function useCamera({
     startCountdown(seconds);
   };
 
-  // Start camera when facing mode changes
+  // Start camera if autoStart is true
   useEffect(() => {
-    if (facingMode) {
+    if (autoStart) {
       startCamera();
     }
-  }, [facingMode]);
+  }, [facingMode, stream]); // Only run when facing mode changes
 
   // Cleanup camera resources on unmount or stream change
   useEffect(() => {

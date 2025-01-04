@@ -1,6 +1,6 @@
 "use client";
 
-import { CameraView, useCamera } from "@/components/camera";
+import { CameraPreview, useCamera } from "@/components/camera";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -44,6 +44,7 @@ export function CameraDemo() {
       setShowPreview(true);
     },
     selfie: true,
+    autoStart: false,
   });
 
   return (
@@ -64,7 +65,7 @@ export function CameraDemo() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="relative overflow-hidden rounded-md bg-muted">
-            <CameraView
+            <CameraPreview
               ref={ref}
               className={cn(!stream && "invisible")}
               selfie={facingMode === "user"}

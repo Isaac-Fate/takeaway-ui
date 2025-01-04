@@ -1,4 +1,5 @@
 import { CameraDemo } from "./components/camera-demo";
+import { MarkdownDemo } from "./components/markdown-demo";
 
 export default function GalleryPage() {
   return (
@@ -15,6 +16,9 @@ export default function GalleryPage() {
       <div className="space-y-10">
         <section id="camera">
           <CameraDemo />
+        </section>
+        <section id="markdown">
+          <MarkdownDemo />
         </section>
       </div>
     </div>
