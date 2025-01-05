@@ -11,10 +11,11 @@ import { useTheme } from "next-themes";
 // @ts-expect-error: react-syntax-highlighter is not typed
 import SyntaxHighlighter from "react-syntax-highlighter";
 
-// @ts-expect-error: react-syntax-highlighter is not typed
 import {
   a11yLight,
   a11yDark,
+
+  // @ts-expect-error: react-syntax-highlighter is not typed
 } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 interface Position {
