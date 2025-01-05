@@ -12,7 +12,10 @@ import { useTheme } from "next-themes";
 import SyntaxHighlighter from "react-syntax-highlighter";
 
 // @ts-expect-error: react-syntax-highlighter is not typed
-import { a11y, a11yDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import {
+  a11yLight,
+  a11yDark,
+} from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 interface Position {
   line: number;
@@ -40,12 +43,26 @@ export function CodeBlock({
   ...props
 }: CodeBlockProps) {
   const { resolvedTheme } = useTheme();
-  const codeContent = String(children).replace(/\n$/, "");
+
+  console.log(a11yLight);
+  console.log(a11yDark);
+
+  // Code content
+  const codeContent = String(children);
+
+  // Get the programming language from the class name
   const match = /language-(\w+)/.exec(className || "");
   const language = match ? match[1] : "";
 
   // Check if code is inline by comparing start and end line numbers
   const isInline = node?.position?.start.line === node?.position?.end.line;
+
+  // Code block with syntax highlighting
+  const codeStyle = resolvedTheme === "light" ? a11yLight : a11yDark;
+
+  React.useEffect(() => {
+    console.log(codeStyle);
+  }, [resolvedTheme]);
 
   // Handle inline code or code without language
   if (isInline) {
@@ -58,9 +75,6 @@ export function CodeBlock({
       </code>
     );
   }
-
-  // Code block with syntax highlighting
-  const codeStyle = resolvedTheme === "light" ? a11y : a11yDark;
 
   return (
     <Card className="relative">

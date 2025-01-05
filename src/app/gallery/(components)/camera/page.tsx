@@ -4,13 +4,6 @@ import { CameraPreview, useCamera } from "@/components/camera";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -18,11 +11,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-export function CameraDemo() {
+export default function CameraPage() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [countdownSeconds, setCountdownSeconds] = useState(3);
@@ -48,10 +42,12 @@ export function CameraDemo() {
   });
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-1">
-        <h2 className="text-2xl font-semibold tracking-tight">Camera</h2>
-        <p className="text-sm text-muted-foreground">
+    <div className="space-y-8">
+      <div>
+        <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">
+          Camera
+        </h1>
+        <p className="text-lg text-muted-foreground">
           A minimal camera component with capture functionality.
         </p>
       </div>
@@ -59,9 +55,6 @@ export function CameraDemo() {
       <Card>
         <CardHeader>
           <CardTitle>Camera Preview</CardTitle>
-          <CardDescription>
-            {stream ? "Camera is active" : "Camera is inactive"}
-          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="relative overflow-hidden rounded-md bg-muted">
@@ -78,6 +71,7 @@ export function CameraDemo() {
               </div>
             )}
           </div>
+
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Input
@@ -101,7 +95,7 @@ export function CameraDemo() {
                   disabled={isCountingDown || !stream}
                   className={cn(
                     "px-3",
-                    countdownSeconds === seconds && "bg-accent"
+                    countdownSeconds === seconds && "bg-accent",
                   )}
                 >
                   {seconds}s
@@ -109,6 +103,7 @@ export function CameraDemo() {
               ))}
             </div>
           </div>
+
           <div className="flex gap-2">
             {!stream ? (
               <Button onClick={startCamera} size="sm">
@@ -164,7 +159,7 @@ export function CameraDemo() {
             </DialogDescription>
           </DialogHeader>
           {photo && (
-            <div className="aspect-video relative overflow-hidden rounded-md">
+            <div className="relative aspect-video overflow-hidden rounded-md">
               <Image
                 src={photo}
                 alt="Captured photo"

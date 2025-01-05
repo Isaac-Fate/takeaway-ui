@@ -1,15 +1,19 @@
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 const components = [
   {
     name: "Camera",
-    href: "#camera",
+    href: "/gallery/camera",
   },
   {
     name: "Markdown",
-    href: "#markdown",
+    href: "/gallery/markdown",
+  },
+  {
+    name: "Code Block",
+    href: "/gallery/code-block",
   },
 ] as const;
 
@@ -20,26 +24,6 @@ export default function GalleryLayout({
 }) {
   return (
     <div className="container flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
-      <SheetContent side="left" className="w-72 md:hidden">
-        <SheetHeader>
-          <SheetTitle>Components</SheetTitle>
-        </SheetHeader>
-        <div className="mt-4 space-y-1">
-          {components.map((component) => (
-            <Link
-              key={component.href}
-              href={component.href}
-              className={cn(
-                "block rounded-md px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground",
-                "transition-colors"
-              )}
-            >
-              {component.name}
-            </Link>
-          ))}
-        </div>
-      </SheetContent>
-
       <aside className="fixed top-14 z-30 -ml-2 hidden h-[calc(100vh-3.5rem)] w-full shrink-0 md:sticky md:block">
         <div className="h-full py-6 pl-8 pr-6 lg:py-8">
           <div className="space-y-4">
@@ -47,15 +31,13 @@ export default function GalleryLayout({
               <h2 className="mb-2 text-lg font-semibold">Components</h2>
               <div className="space-y-1">
                 {components.map((component) => (
-                  <Link
-                    key={component.href}
-                    href={component.href}
-                    className={cn(
-                      "block rounded-md px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground",
-                      "transition-colors"
-                    )}
-                  >
-                    {component.name}
+                  <Link key={component.href} href={component.href}>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start font-normal"
+                    >
+                      {component.name}
+                    </Button>
                   </Link>
                 ))}
               </div>
@@ -64,7 +46,7 @@ export default function GalleryLayout({
         </div>
       </aside>
 
-      <main className="relative p-6 lg:gap-10 lg:p-8">
+      <main className="relative py-6 lg:gap-10 lg:py-8">
         <div className="mx-auto max-w-4xl">{children}</div>
       </main>
     </div>

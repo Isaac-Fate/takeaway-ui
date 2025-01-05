@@ -1,4 +1,5 @@
 import { Command } from "commander";
+import fs from "fs";
 import { addCommand, initCommand } from "./commands";
 
 const program = new Command();
@@ -17,5 +18,16 @@ program
   .command("init")
   .description("Initialize configuration")
   .action(initCommand);
+
+program.command("debug").action(async () => {
+  console.log("debug");
+
+  const fileContent = await fetch(
+    "https://raw.githubusercontent.com/Isaac-Fate/takeaway-ui/refs/heads/main/src/components/camera/camera-preview.tsx",
+  );
+
+  // Write the file
+  fs.writeFileSync("components/camera-preview.tsx", await fileContent.text());
+});
 
 program.parse();

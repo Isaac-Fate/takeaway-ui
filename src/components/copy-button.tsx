@@ -46,6 +46,7 @@ const CopyButton = React.forwardRef<HTMLButtonElement, CopyButtonProps>(
     );
   }
 );
+
 CopyButton.displayName = "CopyButton";
 
 export { CopyButton };
