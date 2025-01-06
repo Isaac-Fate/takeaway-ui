@@ -15,6 +15,10 @@ const components = [
     name: "Code Block",
     href: "/gallery/code-block",
   },
+  {
+    name: "PDF Viewer",
+    href: "/gallery/pdf-viewer",
+  },
 ] as const;
 
 export default function GalleryLayout({

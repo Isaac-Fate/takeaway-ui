@@ -19,6 +19,12 @@ const components = [
       "A code block component with syntax highlighting and line numbers.",
     href: "/gallery/code-block",
   },
+  {
+    name: "PDF Viewer",
+    description:
+      "A PDF viewer component with zoom, scroll, and page navigation.",
+    href: "/gallery/pdf-viewer",
+  },
 ] as const;
 
 export default function GalleryPage() {
