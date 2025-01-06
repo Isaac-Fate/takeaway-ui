@@ -4,16 +4,12 @@ import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-import { pdfjs, Document, Page } from "react-pdf";
-
-// Support for annotation layer
-import "react-pdf/dist/Page/AnnotationLayer.css";
-
-// Support for text layer
-import "react-pdf/dist/Page/TextLayer.css";
+import * as pdfjsLib from "pdfjs-dist";
+import { TextLayerBuilder } from "pdfjs-dist/web/pdf_viewer.mjs";
+import "@/styles/text_layer_builder.css";
 
 // Set the worker
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
   import.meta.url,
 ).toString();
@@ -24,36 +20,93 @@ interface PDFViewerProps {
 }
 
 export function PDFViewer({ className, src }: PDFViewerProps) {
-  const [numPages, setNumPages] = useState<number>();
-  const [pageNumber, setPageNumber] = useState<number>(3);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const textLayerRef = useRef<HTMLDivElement>(null);
+  const annotationLayerRef = useRef<HTMLDivElement>(null);
+  const [pdf, setPdf] = useState<pdfjsLib.PDFDocumentProxy>();
 
-  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
-    setNumPages(numPages);
+  async function loadPdf() {
+    const loadingTask = pdfjsLib.getDocument(src);
+    const pdf = await loadingTask.promise;
+    setPdf(pdf);
   }
 
-  function handleItemClick({ pageNumber }: { pageNumber: number }) {
-    setPageNumber(pageNumber);
+  async function renderPage(
+    pdf: pdfjsLib.PDFDocumentProxy,
+    pageNumber: number,
+  ) {
+    if (
+      !canvasRef.current ||
+      !textLayerRef.current ||
+      !annotationLayerRef.current
+    )
+      return;
+
+    // Get the page
+    const page = await pdf.getPage(pageNumber);
+
+    // Get the viewport of the page
+    const viewport = page.getViewport({ scale: 1.5 });
+
+    // Get the canvas element
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Get the canvas context
+    const canvasContext = canvas.getContext("2d");
+    if (!canvasContext) return;
+
+    // Set the canvas dimensions to match the PDF page size
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    // Create the render context
+    const renderContext = {
+      canvasContext,
+      viewport,
+    };
+
+    // Render the page content
+    await page.render(renderContext).promise;
+
+    // Render the text layer
+    const textContent = await page.getTextContent();
+
+    console.debug("textContent", textContent);
+
+    // Create the text layer instance
+    const textLayer = new pdfjsLib.TextLayer({
+      textContentSource: textContent,
+      container: textLayerRef.current,
+      viewport: viewport,
+    });
+
+    // Render the text layer
+    await textLayer.render();
   }
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    loadPdf();
+  }, []);
+
+  useEffect(() => {
+    if (pdf === undefined) return;
+
+    renderPage(pdf, 50);
+  }, [pdf]);
 
   return (
     <div
       className={cn(
-        "h-full w-full overflow-clip rounded-md border-2",
+        "relative h-full w-full overflow-clip rounded-md border-2",
         className,
       )}
     >
-      <Document
-        file={src}
-        onLoadSuccess={onDocumentLoadSuccess}
-        onItemClick={handleItemClick}
-      >
-        <Page pageNumber={pageNumber} />
-      </Document>
-      <p>
-        Page {pageNumber} of {numPages}
-      </p>
+      <canvas ref={canvasRef} className="border-2"></canvas>
+
+      <div ref={textLayerRef} className="textLayer !z-50"></div>
+
+      <div ref={annotationLayerRef} className="annotationLayer"></div>
     </div>
   );
 }
