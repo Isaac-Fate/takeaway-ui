@@ -27,7 +27,7 @@ export interface UseCameraOptions {
  * const {
  *   ref,
  *   stream,
- *   startCamera,
+ *   openCamera,
  *   captureImage,
  *   captureWithCountdown
  * } = useCamera({
@@ -50,7 +50,7 @@ export function useCamera({
   // State management
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [facingMode, setFacingMode] = useState<"user" | "environment">(
-    selfie ? "user" : "environment"
+    selfie ? "user" : "environment",
   );
   const [isCountingDown, setIsCountingDown] = useState(false);
   const [countdownValue, setCountdownValue] = useState(0);
@@ -58,7 +58,7 @@ export function useCamera({
   /**
    * Initializes the camera stream and sets up the video element
    */
-  const startCamera = async () => {
+  async function openCamera() {
     try {
       // Request camera access with specified facing mode
       const mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -82,31 +82,31 @@ export function useCamera({
     } catch (err) {
       console.error("Error accessing camera:", err);
     }
-  };
+  }
 
   /**
    * Stops the camera stream and cleans up resources
    */
-  const stopCamera = () => {
+  function closeCamera() {
     if (stream) {
       stream.getTracks().forEach((track) => track.stop());
       setStream(null);
     }
-  };
+  }
 
   /**
    * Switches between front and back cameras
    */
-  const switchCamera = () => {
-    stopCamera();
+  function switchCamera() {
+    closeCamera();
     setFacingMode((prev) => (prev === "user" ? "environment" : "user"));
-  };
+  }
 
   /**
    * Captures an image from the current video frame
    * Handles mirroring for selfie mode
    */
-  const captureImage = () => {
+  function captureImage() {
     const video = videoRef.current;
     if (!video) return;
 
@@ -127,36 +127,36 @@ export function useCamera({
     // Draw the video frame and convert to base64
     ctx.drawImage(video, 0, 0);
     onCapture?.(canvas.toDataURL("image/jpeg"));
-  };
+  }
 
   /**
    * Manages countdown state for delayed capture
    * @param seconds Number of seconds to countdown before capture
    */
-  const startCountdown = (seconds: number) => {
+  function startCountdown(seconds: number) {
     setIsCountingDown(true);
     setCountdownValue(seconds);
-  };
+  }
 
   /**
    * Captures an image after a countdown
    * @param seconds Number of seconds to wait before capturing
    */
-  const captureWithCountdown = (seconds: number = 3) => {
+  function captureWithCountdown(seconds: number = 3) {
     startCountdown(seconds);
-  };
+  }
 
   // Start camera if autoStart is true
   useEffect(() => {
     if (autoStart) {
-      startCamera();
+      openCamera();
     }
   }, [facingMode, stream]); // Only run when facing mode changes
 
   // Cleanup camera resources on unmount or stream change
   useEffect(() => {
     return () => {
-      stopCamera();
+      closeCamera();
     };
   }, [stream]);
 
@@ -185,8 +185,8 @@ export function useCamera({
     facingMode,
     isCountingDown,
     countdownValue,
-    startCamera,
-    stopCamera,
+    openCamera,
+    closeCamera,
     switchCamera,
     captureImage,
     captureWithCountdown,

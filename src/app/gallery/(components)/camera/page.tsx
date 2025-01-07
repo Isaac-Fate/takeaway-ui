@@ -6,12 +6,10 @@ import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -27,8 +25,8 @@ export default function CameraPage() {
     facingMode,
     isCountingDown,
     countdownValue,
-    startCamera,
-    stopCamera,
+    openCamera,
+    closeCamera,
     switchCamera,
     captureImage,
     captureWithCountdown,
@@ -38,128 +36,107 @@ export default function CameraPage() {
       setShowPreview(true);
     },
     selfie: true,
-    autoStart: false,
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
         <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">
           Camera
         </h1>
         <p className="text-lg text-muted-foreground">
-          A minimal camera component with capture functionality.
+          Take photos using your device camera with features like countdown
+          timer and camera switching.
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Camera Preview</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="relative overflow-hidden rounded-md bg-muted">
-            <CameraPreview
-              ref={ref}
-              className={cn(!stream && "invisible")}
-              selfie={facingMode === "user"}
+      <div className="space-y-4">
+        <div className="relative aspect-video overflow-hidden rounded-lg border bg-muted">
+          <CameraPreview
+            ref={ref}
+            className={cn(!stream && "invisible")}
+            selfie={facingMode === "user"}
+          />
+          {isCountingDown && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+              <span className="text-6xl font-bold text-white">
+                {countdownValue}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              min={1}
+              max={10}
+              value={countdownSeconds}
+              onChange={(e) => setCountdownSeconds(Number(e.target.value))}
+              className="w-20"
+              disabled={isCountingDown || !stream}
             />
-            {isCountingDown && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                <span className="text-6xl font-bold text-white">
-                  {countdownValue}
-                </span>
-              </div>
-            )}
+            <span className="text-sm text-muted-foreground">seconds</span>
           </div>
-
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Input
-                type="number"
-                min={1}
-                max={10}
-                value={countdownSeconds}
-                onChange={(e) => setCountdownSeconds(Number(e.target.value))}
-                className="w-20"
-                disabled={isCountingDown || !stream}
-              />
-              <span className="text-sm text-muted-foreground">seconds</span>
-            </div>
-            <div className="flex gap-2">
-              {[3, 5, 10].map((seconds) => (
-                <Button
-                  key={seconds}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCountdownSeconds(seconds)}
-                  disabled={isCountingDown || !stream}
-                  className={cn(
-                    "px-3",
-                    countdownSeconds === seconds && "bg-accent",
-                  )}
-                >
-                  {seconds}s
-                </Button>
-              ))}
-            </div>
-          </div>
-
           <div className="flex gap-2">
-            {!stream ? (
-              <Button onClick={startCamera} size="sm">
-                Start camera
+            {[3, 5, 10].map((seconds) => (
+              <Button
+                key={seconds}
+                variant="outline"
+                size="sm"
+                onClick={() => setCountdownSeconds(seconds)}
+                disabled={isCountingDown || !stream}
+                className={cn(countdownSeconds === seconds && "bg-accent")}
+              >
+                {seconds}s
               </Button>
-            ) : (
-              <>
-                <Button
-                  onClick={captureImage}
-                  size="sm"
-                  disabled={isCountingDown}
-                >
-                  Capture
-                </Button>
-                <Button
-                  onClick={() => captureWithCountdown(countdownSeconds)}
-                  size="sm"
-                  disabled={isCountingDown}
-                >
-                  {isCountingDown
-                    ? `Capturing in ${countdownValue}...`
-                    : "Capture with Countdown"}
-                </Button>
-                <Button
-                  onClick={switchCamera}
-                  variant="outline"
-                  size="sm"
-                  disabled={isCountingDown}
-                >
-                  {facingMode === "user" ? "Rear camera" : "Front camera"}
-                </Button>
-                <Button
-                  onClick={stopCamera}
-                  variant="outline"
-                  size="sm"
-                  disabled={isCountingDown}
-                >
-                  Stop
-                </Button>
-              </>
-            )}
+            ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+
+        <div className="flex gap-2">
+          {!stream ? (
+            <Button onClick={openCamera}>Open Camera</Button>
+          ) : (
+            <>
+              <Button onClick={captureImage} disabled={isCountingDown}>
+                Take Photo
+              </Button>
+              <Button
+                onClick={() => captureWithCountdown(countdownSeconds)}
+                disabled={isCountingDown}
+              >
+                {isCountingDown
+                  ? `Capturing in ${countdownValue}...`
+                  : "Capture with Countdown"}
+              </Button>
+              <Button
+                onClick={switchCamera}
+                variant="outline"
+                disabled={isCountingDown}
+              >
+                Switch Camera
+              </Button>
+              <Button
+                onClick={closeCamera}
+                variant="outline"
+                disabled={isCountingDown}
+              >
+                Close Camera
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
 
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle>Captured Photo</DialogTitle>
-            <DialogDescription>
-              Your photo has been captured. You can download it or take another
-              one.
-            </DialogDescription>
+            <DialogTitle>Photo Preview</DialogTitle>
           </DialogHeader>
           {photo && (
-            <div className="relative aspect-video overflow-hidden rounded-md">
+            <div className="relative aspect-video overflow-hidden rounded-lg">
               <Image
                 src={photo}
                 alt="Captured photo"
@@ -188,7 +165,7 @@ export default function CameraPage() {
                 setShowPreview(false);
               }}
             >
-              Take another
+              Take Another
             </Button>
           </DialogFooter>
         </DialogContent>
