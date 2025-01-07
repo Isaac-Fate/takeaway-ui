@@ -50,9 +50,7 @@ export default function GalleryLayout({
         </div>
       </aside>
 
-      <main className="relative py-6 lg:gap-10 lg:py-8">
-        <div className="mx-auto max-w-4xl">{children}</div>
-      </main>
+      <main className="relative px-4 py-6 lg:gap-10 lg:py-8">{children}</main>
     </div>
   );
 }
