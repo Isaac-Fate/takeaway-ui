@@ -45,13 +45,6 @@ export function PDFViewer({ className, src }: PDFViewerProps) {
   ): Promise<void> {
     setNumPages(document.numPages);
 
-    // const outline = await document.getOutline();
-
-    // const entry = outline[0];
-
-    // const destination = await document.getDestination(entry.dest as string);
-    // console.debug(destination);
-
     // Get all outline entries
     const entries = await getPdfOutlineEntires(document);
 
@@ -125,26 +118,33 @@ export function PDFViewer({ className, src }: PDFViewerProps) {
         </Button>
       </div>
 
-      <PdfOutline
-        entries={outlineEntries}
-        onClickEntry={handleClickOutlineEntry}
-      ></PdfOutline>
+      <div className="flex flex-row">
+        <PdfOutline
+          className="rounded-md border-2"
+          entries={outlineEntries}
+          onClickEntry={handleClickOutlineEntry}
+        ></PdfOutline>
 
-      <Document
-        className="flex w-full flex-row"
-        file={src}
-        onLoadSuccess={onDocumentLoadSuccess}
-        onItemClick={handleItemClick}
-      >
-        {/* <Outline
-          className={cn(
-            "flex h-screen w-[60rem] flex-col gap-2 overflow-y-auto text-wrap font-semibold text-muted-foreground [&_li]:hover:text-foreground",
-            "[&>ul>li>ul>li]:translate-x-2 [&>ul>li>ul>li]:text-sm",
-          )}
-        /> */}
-
-        <Page pageNumber={pageNumber} onLoadSuccess={handlePageLoadSuccess} />
-      </Document>
+        <Document
+          className="flex h-screen w-full flex-col overflow-y-auto"
+          file={src}
+          onLoadSuccess={onDocumentLoadSuccess}
+          onItemClick={handleItemClick}
+        >
+          {/* <Page pageNumber={pageNumber} onLoadSuccess={handlePageLoadSuccess} /> */}
+          {numPages &&
+            Array.from({ length: numPages }, (_, index) => {
+              const pageNumber = index + 1;
+              return (
+                <Page
+                  key={pageNumber}
+                  pageNumber={pageNumber}
+                  onLoadSuccess={handlePageLoadSuccess}
+                />
+              );
+            })}
+        </Document>
+      </div>
     </div>
   );
 }
